@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Bell</title>
+     <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #166088;
+            --accent-color: #4fc3a1;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --danger-color: #dc3545;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f4f7f9;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        h1, h2, h3 {
+            color: var(--secondary-color);
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #bd2130;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .checkbox-item input {
+            width: auto;
+            margin-right: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .days-cell {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .day-badge {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
+        .action-btn {
+            padding: 5px 10px;
+            margin: 0 5px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            background: #f5f5f5;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+        }
+
+        .tab.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 50%;
+            max-width: 500px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: black;
+        }
+
+        .alert {
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 90%;
+            }
+            
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .card-header button {
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Timetable Manager</h1>
+        </header>
+
+        <!-- Alert Messages -->
+        <div id="alert" class="alert">
+            <span id="alert-message"></span>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="tabs">
+            <div class="tab active" data-tab="timetables">Timetables</div>
+            <div class="tab" data-tab="schedules">Schedules</div>
+        </div>
+
+        <!-- Timetables Tab -->
+        <div id="timetables" class="tab-content active">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Timetables</h2>
+                    <button class="btn btn-primary" id="add-timetable-btn">Add Timetable</button>
+                </div>
+                <div id="timetables-list">
+                    <table id="timetables-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Days</th>
+                                <th>Active</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Timetables will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Schedules Tab -->
+        <div id="schedules" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Schedules</h2>
+                    <div>
+                        <select id="timetable-filter" class="form-control">
+                            <option value="">All Timetables</option>
+                            <!-- Timetable options will be loaded here -->
+                        </select>
+                        <button class="btn btn-primary" id="add-schedule-btn">Add Schedule</button>
+                    </div>
+                </div>
+                <div id="schedules-list">
+                    <table id="schedules-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Time</th>
+                                <th>Days</th>
+                                <th>Timetable</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Schedules will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Timetable Modal -->
+        <div id="add-timetable-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Add New Timetable</h2>
+                <form id="add-timetable-form">
+                    <div class="form-group">
+                        <label for="timetable-name">Name:</label>
+                        <input type="text" id="timetable-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Days:</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="monday" value="Monday">
+                                <label for="monday">Monday</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="tuesday" value="Tuesday">
+                                <label for="tuesday">Tuesday</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="wednesday" value="Wednesday">
+                                <label for="wednesday">Wednesday</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="thursday" value="Thursday">
+                                <label for="thursday">Thursday</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="friday" value="Friday">
+                                <label for="friday">Friday</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="saturday" value="Saturday">
+                                <label for="saturday">Saturday</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="sunday" value="Sunday">
+                                <label for="sunday">Sunday</label>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Timetable</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Add Schedule Modal -->
+        <div id="add-schedule-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Add New Schedule</h2>
+                <form id="add-schedule-form">
+                    <div class="form-group">
+                        <label for="schedule-time">Time:</label>
+                        <input type="time" id="schedule-time" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="schedule-timetable">Timetable:</label>
+                        <select id="schedule-timetable" required>
+                            <!-- Timetable options will be loaded here -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Days:</label>
+                        <div class="checkbox-group" id="schedule-days">
+                            <!-- Days will be dynamically loaded based on selected timetable -->
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Schedule</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API Base URL
+        const API_BASE_URL = 'https://bell-backend-c07af688258c.herokuapp.com/api';
+        
+        // DOM Elements
+        const timetablesTab = document.querySelector('[data-tab="timetables"]');
+        const schedulesTab = document.querySelector('[data-tab="schedules"]');
+        const timetablesContent = document.getElementById('timetables');
+        const schedulesContent = document.getElementById('schedules');
+        const timetablesTable = document.getElementById('timetables-table').querySelector('tbody');
+        const schedulesTable = document.getElementById('schedules-table').querySelector('tbody');
+        const timetableFilter = document.getElementById('timetable-filter');
+        const addTimetableBtn = document.getElementById('add-timetable-btn');
+        const addScheduleBtn = document.getElementById('add-schedule-btn');
+        const addTimetableModal = document.getElementById('add-timetable-modal');
+        const addScheduleModal = document.getElementById('add-schedule-modal');
+        const addTimetableForm = document.getElementById('add-timetable-form');
+        const addScheduleForm = document.getElementById('add-schedule-form');
+        const scheduleTimetable = document.getElementById('schedule-timetable');
+        const scheduleDays = document.getElementById('schedule-days');
+        const alert = document.getElementById('alert');
+        const alertMessage = document.getElementById('alert-message');
+        
+        // Global variables
+        let timetables = [];
+        let schedules = [];
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', init);
+        timetablesTab.addEventListener('click', () => switchTab('timetables'));
+        schedulesTab.addEventListener('click', () => switchTab('schedules'));
+        addTimetableBtn.addEventListener('click', () => openModal(addTimetableModal));
+        addScheduleBtn.addEventListener('click', () => openModal(addScheduleModal));
+        document.querySelectorAll('.close').forEach(close => {
+            close.addEventListener('click', () => closeModal(close.closest('.modal')));
+        });
+        timetableFilter.addEventListener('change', filterSchedules);
+        addTimetableForm.addEventListener('submit', handleAddTimetable);
+        addScheduleForm.addEventListener('submit', handleAddSchedule);
+        scheduleTimetable.addEventListener('change', updateScheduleDays);
+
+        // Initialize
+        function init() {
+            fetchTimetables();
+            fetchSchedules();
+        }
+
+        // Tab switching logic
+        function switchTab(tabName) {
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Add active class to selected tab
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        // Modal functions
+        function openModal(modal) {
+            modal.style.display = 'block';
+        }
+
+        function closeModal(modal) {
+            modal.style.display = 'none';
+            
+            // Reset forms when closing modals
+            if (modal === addTimetableModal) {
+                addTimetableForm.reset();
+            } else if (modal === addScheduleModal) {
+                addScheduleForm.reset();
+                scheduleDays.innerHTML = '';
+            }
+        }
+
+        // Alert functions
+        function showAlert(message, type) {
+            alert.className = `alert alert-${type}`;
+            alertMessage.textContent = message;
+            alert.style.display = 'block';
+            
+            // Hide alert after 3 seconds
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 3000);
+        }
+
+        // API calls
+        async function fetchTimetables() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/timetables`);
+                if (!response.ok) throw new Error('Failed to fetch timetables');
+                
+                timetables = await response.json();
+                renderTimetables();
+                populateTimetableDropdowns();
+            } catch (error) {
+                console.error('Error fetching timetables:', error);
+                showAlert('Failed to load timetables', 'danger');
+            }
+        }
+
+        async function fetchSchedules() {
+            try {
+                const timetableId = timetableFilter.value;
+                const url = timetableId 
+                    ? `${API_BASE_URL}/schedules?timetable_id=${timetableId}`
+                    : `${API_BASE_URL}/schedules`;
+                
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Failed to fetch schedules');
+                
+                schedules = await response.json();
+                renderSchedules();
+            } catch (error) {
+                console.error('Error fetching schedules:', error);
+                showAlert('Failed to load schedules', 'danger');
+            }
+        }
+
+        async function addTimetable(timetableData) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/timetables`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(timetableData)
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to add timetable');
+                }
+                
+                showAlert('Timetable added successfully', 'success');
+                fetchTimetables();
+                closeModal(addTimetableModal);
+            } catch (error) {
+                console.error('Error adding timetable:', error);
+                showAlert(error.message, 'danger');
+            }
+        }
+
+        async function addSchedule(scheduleData) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/schedules`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(scheduleData)
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to add schedule');
+                }
+                
+                showAlert('Schedule added successfully', 'success');
+                fetchSchedules();
+                closeModal(addScheduleModal);
+            } catch (error) {
+                console.error('Error adding schedule:', error);
+                showAlert(error.message, 'danger');
+            }
+        }
+
+        async function deleteTimetable(id) {
+            if (!confirm('Are you sure you want to delete this timetable? All associated schedules will also be deleted.')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/timetables/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) throw new Error('Failed to delete timetable');
+                
+                showAlert('Timetable deleted successfully', 'success');
+                fetchTimetables();
+                fetchSchedules();
+            } catch (error) {
+                console.error('Error deleting timetable:', error);
+                showAlert('Failed to delete timetable', 'danger');
+            }
+        }
+
+        async function deleteSchedule(id) {
+            if (!confirm('Are you sure you want to delete this schedule?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/schedules/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) throw new Error('Failed to delete schedule');
+                
+                showAlert('Schedule deleted successfully', 'success');
+                fetchSchedules();
+            } catch (error) {
+                console.error('Error deleting schedule:', error);
+                showAlert('Failed to delete schedule', 'danger');
+            }
+        }
+
+        async function setActiveTimetable(id) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/timetables/${id}/set-active`, {
+                    method: 'POST'
+                });
+                
+                if (!response.ok) throw new Error('Failed to set active timetable');
+                
+                showAlert('Timetable set as active', 'success');
+                fetchTimetables();
+            } catch (error) {
+                console.error('Error setting active timetable:', error);
+                showAlert('Failed to set active timetable', 'danger');
+            }
+        }
+
+        // Render functions
+        function renderTimetables() {
+            timetablesTable.innerHTML = '';
+            
+            if (timetables.length === 0) {
+                timetablesTable.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center;">No timetables found</td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            timetables.forEach(timetable => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${timetable.id}</td>
+                    <td>${timetable.name}</td>
+                    <td>
+                        <div class="days-cell">
+                            ${timetable.days.map(day => `<span class="day-badge">${day}</span>`).join('')}
+                        </div>
+                    </td>
+                    <td>
+                        ${timetable.is_active ? 'Active' : 'Inactive'}
+                    </td>
+                    <td>
+                        <button class="btn btn-primary action-btn" onclick="setActiveTimetable(${timetable.id})">Set Active</button>
+                        <button class="btn btn-danger action-btn" onclick="deleteTimetable(${timetable.id})">Delete</button>
+                    </td>
+                `;
+                timetablesTable.appendChild(row);
+            });
+        }
+
+        function renderSchedules() {
+            schedulesTable.innerHTML = '';
+            
+            if (schedules.length === 0) {
+                schedulesTable.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center;">No schedules found</td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            schedules.forEach(schedule => {
+                const timetable = timetables.find(t => t.id === schedule.timetable_id);
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${schedule.id}</td>
+                    <td>${formatTime(schedule.time)}</td>
+                    <td>
+                        <div class="days-cell">
+                            ${schedule.days.map(day => `<span class="day-badge">${day}</span>`).join('')}
+                        </div>
+                    </td>
+                    <td>${timetable ? timetable.name : 'Unknown'}</td>
+                    <td>
+                        <button class="btn btn-danger action-btn" onclick="deleteSchedule(${schedule.id})">Delete</button>
+                    </td>
+                `;
+                schedulesTable.appendChild(row);
+            });
+        }
+
+        function populateTimetableDropdowns() {
+            // Populate filter dropdown
+            timetableFilter.innerHTML = '<option value="">All Timetables</option>';
+            
+            // Populate schedule form dropdown
+            scheduleTimetable.innerHTML = '<option value="">Select Timetable</option>';
+            
+            timetables.forEach(timetable => {
+                const filterOption = document.createElement('option');
+                filterOption.value = timetable.id;
+                filterOption.textContent = timetable.name;
+                timetableFilter.appendChild(filterOption);
+                
+                const scheduleOption = filterOption.cloneNode(true);
+                scheduleTimetable.appendChild(scheduleOption);
+            });
+        }
+
+        function updateScheduleDays() {
+            scheduleDays.innerHTML = '';
+            
+            const timetableId = parseInt(scheduleTimetable.value);
+            if (!timetableId) return;
+            
+            const selectedTimetable = timetables.find(t => t.id === timetableId);
+            if (!selectedTimetable) return;
+            
+            selectedTimetable.days.forEach(day => {
+                const checkboxItem = document.createElement('div');
+                checkboxItem.className = 'checkbox-item';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = `schedule-${day.toLowerCase()}`;
+                checkbox.value = day;
+                
+                const label = document.createElement('label');
+                label.htmlFor = `schedule-${day.toLowerCase()}`;
+                label.textContent = day;
+                
+                checkboxItem.appendChild(checkbox);
+                checkboxItem.appendChild(label);
+                scheduleDays.appendChild(checkboxItem);
+            });
+        }
+
+        // Form handlers
+        function handleAddTimetable(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('timetable-name').value.trim();
+            if (!name) {
+                showAlert('Please enter a timetable name', 'danger');
+                return;
+            }
+            
+            const days = [];
+            document.querySelectorAll('#add-timetable-form input[type="checkbox"]:checked').forEach(checkbox => {
+                days.push(checkbox.value);
+            });
+            
+            if (days.length === 0) {
+                showAlert('Please select at least one day', 'danger');
+                return;
+            }
+            
+            addTimetable({ name, days });
+        }
+
+        function handleAddSchedule(e) {
+            e.preventDefault();
+            
+            const time = document.getElementById('schedule-time').value;
+            const timetable_id = parseInt(scheduleTimetable.value);
+            
+            if (!time) {
+                showAlert('Please enter a time', 'danger');
+                return;
+            }
+            
+            if (!timetable_id) {
+                showAlert('Please select a timetable', 'danger');
+                return;
+            }
+            
+            const days = [];
+            document.querySelectorAll('#schedule-days input[type="checkbox"]:checked').forEach(checkbox => {
+                days.push(checkbox.value);
+            });
+            
+            if (days.length === 0) {
+                showAlert('Please select at least one day', 'danger');
+                return;
+            }
+            
+            addSchedule({ time, days, timetable_id });
+        }
+
+        function filterSchedules() {
+            fetchSchedules();
+        }
+
+        // Helper functions
+        function formatTime(timeString) {
+            try {
+                const [hours, minutes] = timeString.split(':');
+                const hour = parseInt(hours);
+                const period = hour >= 12 ? 'PM' : 'AM';
+                const formattedHour = hour % 12 || 12;
+                return `${formattedHour}:${minutes} ${period}`;
+            } catch (error) {
+                return timeString;
+            }
+        }
+
+        // Make functions available globally for onclick handlers
+        window.deleteTimetable = deleteTimetable;
+        window.deleteSchedule = deleteSchedule;
+        window.setActiveTimetable = setActiveTimetable;
+    </script>
+</body>
+</html>
