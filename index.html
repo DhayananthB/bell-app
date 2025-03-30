@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Bell</title>
-     <style>
+    <style>
         :root {
             --primary-color: #4a6fa5;
             --secondary-color: #166088;
@@ -294,7 +294,6 @@
                     <table id="timetables-table">
                         <thead>
                             <tr>
-                                <th>ID</th>
                                 <th>Name</th>
                                 <th>Days</th>
                                 <th>Active</th>
@@ -326,7 +325,6 @@
                     <table id="schedules-table">
                         <thead>
                             <tr>
-                                <th>ID</th>
                                 <th>Time</th>
                                 <th>Days</th>
                                 <th>Timetable</th>
@@ -649,7 +647,7 @@
             if (timetables.length === 0) {
                 timetablesTable.innerHTML = `
                     <tr>
-                        <td colspan="5" style="text-align: center;">No timetables found</td>
+                        <td colspan="4" style="text-align: center;">No timetables found</td>
                     </tr>
                 `;
                 return;
@@ -658,7 +656,6 @@
             timetables.forEach(timetable => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${timetable.id}</td>
                     <td>${timetable.name}</td>
                     <td>
                         <div class="days-cell">
@@ -669,8 +666,8 @@
                         ${timetable.is_active ? 'Active' : 'Inactive'}
                     </td>
                     <td>
-                        <button class="btn btn-primary action-btn" onclick="setActiveTimetable(${timetable.id})">Set Active</button>
-                        <button class="btn btn-danger action-btn" onclick="deleteTimetable(${timetable.id})">Delete</button>
+                        <button class="btn btn-primary action-btn" onclick="setActiveTimetable('${timetable.id}')">Set Active</button>
+                        <button class="btn btn-danger action-btn" onclick="deleteTimetable('${timetable.id}')">Delete</button>
                     </td>
                 `;
                 timetablesTable.appendChild(row);
@@ -683,17 +680,16 @@
             if (schedules.length === 0) {
                 schedulesTable.innerHTML = `
                     <tr>
-                        <td colspan="5" style="text-align: center;">No schedules found</td>
+                        <td colspan="4" style="text-align: center;">No schedules found</td>
                     </tr>
                 `;
                 return;
             }
             
             schedules.forEach(schedule => {
-                const timetable = timetables.find(t => t.id === schedule.timetable_id);
+                const timetable = timetables.find(t => t.id == schedule.timetable_id);
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${schedule.id}</td>
                     <td>${formatTime(schedule.time)}</td>
                     <td>
                         <div class="days-cell">
@@ -702,7 +698,7 @@
                     </td>
                     <td>${timetable ? timetable.name : 'Unknown'}</td>
                     <td>
-                        <button class="btn btn-danger action-btn" onclick="deleteSchedule(${schedule.id})">Delete</button>
+                        <button class="btn btn-danger action-btn" onclick="deleteSchedule('${schedule.id}')">Delete</button>
                     </td>
                 `;
                 schedulesTable.appendChild(row);
@@ -730,10 +726,10 @@
         function updateScheduleDays() {
             scheduleDays.innerHTML = '';
             
-            const timetableId = parseInt(scheduleTimetable.value);
+            const timetableId = scheduleTimetable.value;
             if (!timetableId) return;
             
-            const selectedTimetable = timetables.find(t => t.id === timetableId);
+            const selectedTimetable = timetables.find(t => t.id == timetableId);
             if (!selectedTimetable) return;
             
             selectedTimetable.days.forEach(day => {
@@ -782,7 +778,7 @@
             e.preventDefault();
             
             const time = document.getElementById('schedule-time').value;
-            const timetable_id = parseInt(scheduleTimetable.value);
+            const timetable_id = scheduleTimetable.value;
             
             if (!time) {
                 showAlert('Please enter a time', 'danger');
