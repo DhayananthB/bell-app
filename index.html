@@ -126,6 +126,22 @@
             margin-right: 5px;
         }
 
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 5px;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .radio-item input {
+            width: auto;
+            margin-right: 5px;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -161,6 +177,15 @@
             padding: 3px 8px;
             border-radius: 12px;
             font-size: 12px;
+        }
+
+        .bell-badge {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-left: 5px;
         }
 
         .action-btn {
@@ -269,7 +294,7 @@
 <body>
     <div class="container">
         <header>
-            <h1>Timetable Manager</h1>
+            <h1 style="color: white;">Timetable Manager</h1>
         </header>
 
         <!-- Alert Messages -->
@@ -327,6 +352,7 @@
                             <tr>
                                 <th>Time</th>
                                 <th>Days</th>
+                                <th>Bell Type</th>
                                 <th>Timetable</th>
                                 <th>Actions</th>
                             </tr>
@@ -409,6 +435,19 @@
                             <!-- Days will be dynamically loaded based on selected timetable -->
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label>Bell Type:</label>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" id="shortbell" name="bell-type" value="shortbell" checked>
+                                <label for="shortbell">Short Bell</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="longbell" name="bell-type" value="longbell">
+                                <label for="longbell">Long Bell</label>
+                            </div>
+                        </div>
+                    </div>
                     <button type="submit" class="btn btn-primary">Add Schedule</button>
                 </form>
             </div>
@@ -417,7 +456,7 @@
 
     <script>
         // API Base URL
-        const API_BASE_URL = 'https://bell-backend-c07af688258c.herokuapp.com/api';
+        const API_BASE_URL = 'http://192.168.254.150:5000/api';
         
         // DOM Elements
         const timetablesTab = document.querySelector('[data-tab="timetables"]');
@@ -680,7 +719,7 @@
             if (schedules.length === 0) {
                 schedulesTable.innerHTML = `
                     <tr>
-                        <td colspan="4" style="text-align: center;">No schedules found</td>
+                        <td colspan="5" style="text-align: center;">No schedules found</td>
                     </tr>
                 `;
                 return;
@@ -695,6 +734,9 @@
                         <div class="days-cell">
                             ${schedule.days.map(day => `<span class="day-badge">${day}</span>`).join('')}
                         </div>
+                    </td>
+                    <td>
+                        <span class="bell-badge">${capitalizeFirstLetter(schedule.bell_type || 'shortbell')}</span>
                     </td>
                     <td>${timetable ? timetable.name : 'Unknown'}</td>
                     <td>
@@ -779,6 +821,7 @@
             
             const time = document.getElementById('schedule-time').value;
             const timetable_id = scheduleTimetable.value;
+            const bell_type = document.querySelector('input[name="bell-type"]:checked').value;
             
             if (!time) {
                 showAlert('Please enter a time', 'danger');
@@ -800,7 +843,7 @@
                 return;
             }
             
-            addSchedule({ time, days, timetable_id });
+            addSchedule({ time, days, timetable_id, bell_type });
         }
 
         function filterSchedules() {
@@ -818,6 +861,10 @@
             } catch (error) {
                 return timeString;
             }
+        }
+
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
         }
 
         // Make functions available globally for onclick handlers
